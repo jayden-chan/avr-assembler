@@ -4,6 +4,8 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
 
+mod preproc;
+
 pub struct Args {
     bin: bool,
     verbose: bool,
@@ -42,6 +44,10 @@ fn main() {
     let mut s = String::new();
     match file.read_to_string(&mut s) {
         Err(why) => panic!("Error: Failed to open file. Reason: {}", why.description()),
-        Ok(_) => print!("{}", s),
+        Ok(_) => {},
     }
+
+    let s = preproc::strip(s);
+
+    println!("{}", s);
 }
