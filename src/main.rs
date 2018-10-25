@@ -37,13 +37,19 @@ fn main() {
     let path = Path::new(&path);
 
     let mut file = match File::open(&path) {
-        Err(why) => panic!("Error: Failed to open file. Reason: {}", why.description()),
+        Err(why) => {
+            eprintln!("Failed to open file: {}", why.description());
+            std::process::exit(1);
+        },
         Ok(file) => file,
     };
 
     let mut s = String::new();
     match file.read_to_string(&mut s) {
-        Err(why) => panic!("Error: Failed to open file. Reason: {}", why.description()),
+        Err(why) => {
+            eprintln!("Failed to open file: {}", why.description());
+            std::process::exit(1);
+        },
         Ok(_) => {},
     }
 
