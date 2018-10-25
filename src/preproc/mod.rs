@@ -17,6 +17,7 @@ pub fn strip(s: String) -> String {
             continue;
         }
 
+        // Join lines with only a label in them
         if words.len() == 1 && words[0].contains(":") {
             ret.push_str(&words[0]);
             ret.push(' ');
@@ -40,5 +41,5 @@ pub fn strip(s: String) -> String {
         ret.push('\n');
     }
     ret.pop();
-    ret
+    return ret;
 }
