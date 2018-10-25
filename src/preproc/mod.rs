@@ -17,6 +17,12 @@ pub fn strip(s: String) -> String {
             continue;
         }
 
+        if words.len() == 1 && words[0].contains(":") {
+            ret.push_str(&words[0]);
+            ret.push(' ');
+            continue;
+        }
+
         for word in words {
             match word.chars().next() {
                 Some(';') => {
