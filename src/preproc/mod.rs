@@ -1,6 +1,6 @@
 ///
 /// Removes comments, indentation, and blank lines from the supplied
-/// buffer.
+/// buffer. [DEPRECATED]
 ///
 pub fn strip(s: String) -> String {
     let mut ret = String::new();

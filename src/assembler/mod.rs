@@ -7,7 +7,7 @@ use std::collections::HashMap;
 mod op;
 
 #[derive(Debug)]
-pub struct Line {
+struct Line {
     num: u32,
     addr: u32,
     ins: op::Instruction,
@@ -16,11 +16,11 @@ pub struct Line {
 
 #[derive(Debug)]
 pub struct Interm {
-    pub lines: Vec<Line>,
-    pub optab: Vec<String>,
-    pub locctr: u32,
-    pub linectr: u32,
-    pub symtab: HashMap<String, u32>,
+    lines: Vec<Line>,
+    optab: Vec<String>,
+    locctr: u32,
+    linectr: u32,
+    symtab: HashMap<String, u32>,
 }
 
 ///

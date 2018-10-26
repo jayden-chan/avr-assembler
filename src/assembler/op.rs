@@ -1,7 +1,7 @@
 #[derive(Debug)]
 pub struct Instruction {
-    pub code: String,
-    pub operands: Vec<String>,
+    code: String,
+    operands: Vec<String>,
 }
 
 ///
