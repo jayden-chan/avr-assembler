@@ -1,3 +1,8 @@
+///
+/// The op module contains functions related to assembly
+/// operation codes
+///
+
 #[derive(Debug)]
 pub struct Instruction {
     code: String,

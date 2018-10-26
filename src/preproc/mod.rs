@@ -1,12 +1,14 @@
 ///
-/// The parse function processes preprocessor macros like #define,
-/// #undef, etc
+/// The preproc mod is responsible for handling preprocessor directives
 ///
-
 use std::collections::HashMap;
 
 use assembler::Interm;
 
+///
+/// The parse function processes preprocessor macros like #define,
+/// #undef, etc
+///
 pub fn parse(file: &String) -> Interm {
     let ret = Interm {
         lines: Vec::new(),
