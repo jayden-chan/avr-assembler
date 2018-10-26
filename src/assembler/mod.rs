@@ -7,40 +7,34 @@ use std::collections::HashMap;
 mod op;
 
 #[derive(Debug)]
-struct Line {
-    num: u32,
-    addr: u32,
-    ins: op::Instruction,
-    opcode: i32,
+pub struct Line {
+    pub num: u32,
+    pub addr: u32,
+    pub ins: op::Instruction,
+    pub opcode: i32,
 }
 
 #[derive(Debug)]
 pub struct Interm {
-    lines: Vec<Line>,
-    optab: Vec<String>,
-    locctr: u32,
-    linectr: u32,
-    symtab: HashMap<String, u32>,
+    pub lines: Vec<Line>,
+    pub optab: Vec<String>,
+    pub locctr: u32,
+    pub linectr: u32,
+    pub symtab: HashMap<String, u32>,
 }
 
 ///
 /// This function completes the first pass of the algorithm.
-/// General description is available in the PDF
+/// General description is available in the PDF.
 ///
-pub fn first_pass(file: String) -> Result<Interm, String> {
-    let mut ret = Interm {
-        lines: Vec::new(),
-        optab: Vec::new(),
-        locctr: 0,
-        linectr: 0,
-        symtab: HashMap::new(),
-    };
-
+/// Note: This function will mutate the `interm` parameter.
+///
+pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
     for line in file.lines() {
         let mut tokens: Vec<_> = line.split_whitespace().collect();
 
-        ret.linectr += 1;
-        println!("{}: {}", ret.linectr, line);
+        interm.linectr += 1;
+        println!("{}: {}", interm.linectr, line);
 
         // Skip blank lines
         if tokens.len() == 0 {
@@ -49,29 +43,29 @@ pub fn first_pass(file: String) -> Result<Interm, String> {
 
         // Skip commented lines and assembler directives (for now)
         match &tokens[0][..1] {
-            ";" | "." => continue,
+            ";" | "." | "#" => continue,
             _ => {},
         }
 
         if tokens[0].ends_with(":") {
             let symbol = &tokens[0][..tokens[0].len()-1];
 
-            if ret.symtab.contains_key(symbol) {
+            if interm.symtab.contains_key(symbol) {
                 return Err(
                     format!(
                         "Error: redefinition of symbol \"{}\"\nLine {}:\n\n{}",
                         symbol,
-                        ret.linectr,
+                        interm.linectr,
                         line
                     )
                 );
             } else {
-                ret.symtab.insert(symbol.to_string(), ret.locctr);
+                interm.symtab.insert(symbol.to_string(), interm.locctr);
             }
         }
 
-        ret.locctr += op::length(&tokens[0]);
+        interm.locctr += op::length(&tokens[0]);
     }
 
-    Ok(ret)
+    Ok(())
 }

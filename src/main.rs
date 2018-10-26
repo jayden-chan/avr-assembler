@@ -54,11 +54,13 @@ fn main() {
         Ok(_) => {},
     }
 
-    let interm = assembler::first_pass(s);
+    let mut interm = preproc::parse(&s);
 
-    match interm {
-        Ok(i) => {
-            println!("{:?}", i);
+    let result = assembler::first_pass(&s, &mut interm);
+
+    match result {
+        Ok(_) => {
+            println!("{:?}", interm);
         },
         Err(e) => {
             eprintln!("{}\n", e);
