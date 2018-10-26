@@ -54,10 +54,20 @@ fn main() {
         Ok(_) => {},
     }
 
-    let s = preproc::strip(s);
-    println!("{}", s);
+    // let s = preproc::strip(s);
+    // println!("{}", s);
 
     let interm = assembler::first_pass(s);
     println!("{:?}", interm);
 
+    match interm {
+        Ok(i) => {
+            let interm = i;
+        },
+        Err(e) => {
+            eprintln!("{}", e);
+            eprintln!("Build failed. Exiting");
+            std::process::exit(1);
+        }
+    }
 }

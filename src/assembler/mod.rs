@@ -19,27 +19,41 @@ pub struct Interm {
     pub lines: Vec<Line>,
     pub optab: Vec<String>,
     pub locctr: i32,
+    pub linectr: i32,
     pub symtab: HashMap<String, i32>,
 }
 
-pub fn first_pass(file: String) -> Interm {
+pub fn first_pass(file: String) -> Result<Interm, String> {
     let mut ret = Interm {
         lines: Vec::new(),
         optab: Vec::new(),
         locctr: 0,
+        linectr: 0,
         symtab: HashMap::new(),
     };
 
     for line in file.lines() {
         let mut tokens: Vec<_> = line.split_whitespace().collect();
 
-        // Skip assembler directives for now
-        if tokens[0].starts_with(".") {
+        ret.linectr += 1;
+
+        println!("{}: {}", ret.linectr, line);
+
+        if tokens.len() == 0 {
             continue;
-        } else if tokens[0].ends_with(":") {
+        }
+
+        let first = &tokens[0][..1];
+        match first {
+            ";" | "." => continue,
+            _ => {},
+        }
+
+        if tokens[0].ends_with(":") {
             let symbol = &tokens[0][..tokens[0].len()-1];
+
             if ret.symtab.contains_key(symbol) {
-                println!("Symbol found already lmao");
+                return Err(format!("Error line {}: Redefinition of symbol \"{}\"", ret.linectr, symbol));
             } else {
                 ret.symtab.insert(symbol.to_string(), ret.locctr);
             }
@@ -48,5 +62,5 @@ pub fn first_pass(file: String) -> Interm {
         ret.locctr += 1;
     }
 
-    return ret;
+    Ok(ret)
 }
