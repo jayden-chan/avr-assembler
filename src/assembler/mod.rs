@@ -4,13 +4,13 @@
 ///
 use std::collections::HashMap;
 
-mod optab;
+mod op;
 
 #[derive(Debug)]
 pub struct Line {
-    num: i32,
-    addr: i32,
-    ins: optab::Instruction,
+    num: u32,
+    addr: u32,
+    ins: op::Instruction,
     opcode: i32,
 }
 
@@ -18,11 +18,15 @@ pub struct Line {
 pub struct Interm {
     pub lines: Vec<Line>,
     pub optab: Vec<String>,
-    pub locctr: i32,
-    pub linectr: i32,
-    pub symtab: HashMap<String, i32>,
+    pub locctr: u32,
+    pub linectr: u32,
+    pub symtab: HashMap<String, u32>,
 }
 
+///
+/// This function completes the first pass of the algorithm.
+/// General description is available in the PDF
+///
 pub fn first_pass(file: String) -> Result<Interm, String> {
     let mut ret = Interm {
         lines: Vec::new(),
@@ -36,13 +40,14 @@ pub fn first_pass(file: String) -> Result<Interm, String> {
         let mut tokens: Vec<_> = line.split_whitespace().collect();
 
         ret.linectr += 1;
-
         println!("{}: {}", ret.linectr, line);
 
+        // Skip blank lines
         if tokens.len() == 0 {
             continue;
         }
 
+        // Skip commented lines and assembler directives (for now)
         let first = &tokens[0][..1];
         match first {
             ";" | "." => continue,
@@ -53,13 +58,20 @@ pub fn first_pass(file: String) -> Result<Interm, String> {
             let symbol = &tokens[0][..tokens[0].len()-1];
 
             if ret.symtab.contains_key(symbol) {
-                return Err(format!("Error line {}: Redefinition of symbol \"{}\"", ret.linectr, symbol));
+                return Err(
+                    format!(
+                        "Error: redefinition of symbol \"{}\"\nLine {}:\n\n{}",
+                        symbol,
+                        ret.linectr,
+                        line
+                    )
+                );
             } else {
                 ret.symtab.insert(symbol.to_string(), ret.locctr);
             }
         }
 
-        ret.locctr += 1;
+        ret.locctr += op::length(&tokens[0]);
     }
 
     Ok(ret)
