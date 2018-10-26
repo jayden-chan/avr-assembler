@@ -48,8 +48,7 @@ pub fn first_pass(file: String) -> Result<Interm, String> {
         }
 
         // Skip commented lines and assembler directives (for now)
-        let first = &tokens[0][..1];
-        match first {
+        match &tokens[0][..1] {
             ";" | "." => continue,
             _ => {},
         }
