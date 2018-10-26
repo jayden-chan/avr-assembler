@@ -5,6 +5,7 @@ use std::io::prelude::*;
 use std::path::Path;
 
 mod preproc;
+mod assembler;
 
 pub struct Args {
     bin: bool,
@@ -54,6 +55,9 @@ fn main() {
     }
 
     let s = preproc::strip(s);
-
     println!("{}", s);
+
+    let interm = assembler::first_pass(s);
+    println!("{:?}", interm);
+
 }
