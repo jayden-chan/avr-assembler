@@ -16,4 +16,5 @@
 	ldi r16, 0b00000010
 	out PORTB, r16
 
-done:	jmp done
+done:	
+jmp done

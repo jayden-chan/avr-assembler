@@ -47,24 +47,28 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
             _ => {},
         }
 
-        if tokens[0].ends_with(":") {
-            let symbol = &tokens[0][..tokens[0].len()-1];
+        for token in tokens {
+            if token.ends_with(":") {
+                let symbol = &token[..token.len()-1];
 
-            if interm.symtab.contains_key(symbol) {
-                return Err(
-                    format!(
-                        "Error: redefinition of symbol \"{}\"\nLine {}:\n\n{}",
-                        symbol,
-                        interm.linectr,
-                        line
-                    )
-                );
+                if interm.symtab.contains_key(symbol) {
+                    return Err(
+                        format!(
+                            "Error: redefinition of symbol \"{}\"\nLine {}:\n\n{}",
+                            symbol,
+                            interm.linectr,
+                            line
+                        )
+                    );
+                } else {
+                    interm.symtab.insert(symbol.to_string(), interm.locctr);
+                }
             } else {
-                interm.symtab.insert(symbol.to_string(), interm.locctr);
+                interm.locctr += op::length(token);
+                break;
             }
         }
 
-        interm.locctr += op::length(&tokens[0]);
     }
 
     Ok(())
