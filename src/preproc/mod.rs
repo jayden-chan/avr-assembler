@@ -1,6 +1,6 @@
-///
-/// The preproc mod is responsible for handling preprocessor directives
-///
+//!
+//! The preproc mod is responsible for handling preprocessor directives
+//!
 use std::collections::HashMap;
 
 use assembler::Interm;
@@ -26,28 +26,20 @@ pub fn parse(file: &String) -> Result<Interm, String> {
         if words.len() > 1 && words[0] == "#DEFINE" {
             let symbol = words[1];
             if ret.symtab.contains_key(symbol) {
-                return Err(
-                    format!(
-                        "Error: redefinition of symbol \"{}\"\nLine {}:\n\n{}",
-                        symbol,
-                        ret.linectr,
-                        line
-                    )
-                );
+                return Err(format!(
+                    "Error: redefinition of symbol \"{}\"\nLine {}:\n\n{}",
+                    symbol, ret.linectr, line
+                ));
             } else if words.len() > 2 {
                 match words[2].parse::<u32>() {
                     Ok(n) => {
                         ret.symtab.insert(symbol.to_string(), n);
-                    },
+                    }
                     Err(e) => {
-                        return Err(
-                            format!(
-                                "Error parsing #DEFINE macro: {}\nLine {}:\n\n{}",
-                                e,
-                                ret.linectr,
-                                line
-                            )
-                        );
+                        return Err(format!(
+                            "Error parsing #DEFINE macro: {}\nLine {}:\n\n{}",
+                            e, ret.linectr, line
+                        ));
                     }
                 }
             } else {

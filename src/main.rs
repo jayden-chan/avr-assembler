@@ -4,13 +4,13 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
 
-mod preproc;
 mod assembler;
+mod preproc;
 
 pub struct Args {
     bin: bool,
     verbose: bool,
-    path: Option<String>
+    path: Option<String>,
 }
 
 fn main() {
@@ -21,13 +21,17 @@ fn main() {
         std::process::exit(1);
     }
 
-    let mut args = Args {bin: false, verbose: false, path: None};
+    let mut args = Args {
+        bin: false,
+        verbose: false,
+        path: None,
+    };
 
     for arg in cmd_args {
         match arg.as_str() {
             "--bin" => args.bin = true,
             "--verbose" => args.verbose = true,
-            _ => args.path = Some(arg)
+            _ => args.path = Some(arg),
         }
     }
 
@@ -41,7 +45,7 @@ fn main() {
         Err(why) => {
             eprintln!("Failed to open file: {}", why.description());
             std::process::exit(1);
-        },
+        }
         Ok(file) => file,
     };
 
@@ -50,8 +54,8 @@ fn main() {
         Err(why) => {
             eprintln!("Failed to open file: {}", why.description());
             std::process::exit(1);
-        },
-        Ok(_) => {},
+        }
+        Ok(_) => {}
     }
 
     let result = preproc::parse(&s);
@@ -71,12 +75,11 @@ fn main() {
     match result {
         Ok(_) => {
             println!("{:?}", interm);
-        },
+        }
         Err(e) => {
             eprintln!("{}\n", e);
             eprintln!("Build failed. Exiting");
             std::process::exit(1);
         }
     }
-
 }

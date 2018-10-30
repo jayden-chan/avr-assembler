@@ -1,7 +1,7 @@
-///
-/// This module is responsible for assembling the pre-processed
-/// code
-///
+//!
+//! This module is responsible for assembling the pre-processed
+//! code
+//!
 use std::collections::HashMap;
 
 mod op;
@@ -44,22 +44,18 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
         // Skip commented lines and assembler directives (for now)
         match &tokens[0][..1] {
             ";" | "." | "#" => continue,
-            _ => {},
+            _ => {}
         }
 
         for token in tokens {
             if token.ends_with(":") {
-                let symbol = &token[..token.len()-1];
+                let symbol = &token[..token.len() - 1];
 
                 if interm.symtab.contains_key(symbol) {
-                    return Err(
-                        format!(
-                            "Error: redefinition of symbol \"{}\"\nLine {}:\n\n{}",
-                            symbol,
-                            interm.linectr,
-                            line
-                        )
-                    );
+                    return Err(format!(
+                        "Error: redefinition of symbol \"{}\"\nLine {}:\n\n{}",
+                        symbol, interm.linectr, line
+                    ));
                 } else {
                     interm.symtab.insert(symbol.to_string(), interm.locctr);
                 }
@@ -68,7 +64,6 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
                 break;
             }
         }
-
     }
 
     Ok(())
@@ -95,13 +90,12 @@ pub fn second_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
         // Skip commented lines and assembler directives (for now)
         match &tokens[0][..1] {
             ";" | "." | "#" => continue,
-            _ => {},
+            _ => {}
         }
 
         for token in tokens {
             println!("parsing");
         }
-
     }
 
     Ok(())
