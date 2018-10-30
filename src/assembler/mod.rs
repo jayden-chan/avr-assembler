@@ -73,3 +73,36 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
 
     Ok(())
 }
+
+///
+/// This function completes the first pass of the algorithm.
+/// General description is available in the PDF.
+///
+/// Note: This function will mutate the `interm` parameter.
+///
+pub fn second_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
+    for line in file.lines() {
+        let mut tokens: Vec<_> = line.split_whitespace().collect();
+
+        interm.linectr += 1;
+        println!("{}: {}", interm.linectr, line);
+
+        // Skip blank lines
+        if tokens.len() == 0 {
+            continue;
+        }
+
+        // Skip commented lines and assembler directives (for now)
+        match &tokens[0][..1] {
+            ";" | "." | "#" => continue,
+            _ => {},
+        }
+
+        for token in tokens {
+            println!("parsing");
+        }
+
+    }
+
+    Ok(())
+}

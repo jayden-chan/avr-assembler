@@ -6,7 +6,7 @@
 	out DDRB, r16 ;This is comment with no space
 
 
-#DEFINE test
+#DEFINE test j
 
 			; This is a shitty comment
 

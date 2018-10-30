@@ -11,21 +11,13 @@ pub struct Instruction {
 
 ///
 /// Length returns the length of the opcode for the
-/// provided instruction code
+/// provided instruction code. This function does not
+/// produce any kind of error if an invalid instruction is
+/// provided.
 ///
 pub fn length(code: &str) -> u32 {
-
     match code {
         "CALL" | "JMP" | "LDS" => 32,
         _ => 16,
     }
-
-    // 32 bit opcodes:
-    // CALL
-    // JMP
-    // LDS
-
-    // Weird opcodes
-    // LD (LDD)
-    // ST (STD)
 }

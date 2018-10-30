@@ -54,7 +54,17 @@ fn main() {
         Ok(_) => {},
     }
 
-    let mut interm = preproc::parse(&s);
+    let result = preproc::parse(&s);
+    let mut interm: assembler::Interm;
+
+    match result {
+        Ok(i) => interm = i,
+        Err(e) => {
+            eprintln!("{}\n", e);
+            eprintln!("Build failed. Exiting");
+            std::process::exit(1);
+        }
+    }
 
     let result = assembler::first_pass(&s, &mut interm);
 
