@@ -70,7 +70,7 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
 }
 
 ///
-/// This function completes the first pass of the algorithm.
+/// This function completes the second pass of the algorithm.
 /// General description is available in the PDF.
 ///
 /// Note: This function will mutate the `interm` parameter.
@@ -99,4 +99,16 @@ pub fn second_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
     }
 
     Ok(())
+}
+
+///
+/// Parses one line of the input file.
+/// This function will mutate `interm`
+///
+fn parse_line(line: &String, interm &mut Interm) -> Result<(), String> {
+    let tokens: Vec<_> = line.split_whitespace().collect();
+
+    if tokens.len() == 0 {
+        return Ok(());
+    }
 }
