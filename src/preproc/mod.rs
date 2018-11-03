@@ -48,5 +48,7 @@ pub fn parse(file: &String) -> Result<Interm, String> {
         }
     }
 
+    ret.reset_counters();
+
     Ok(ret)
 }

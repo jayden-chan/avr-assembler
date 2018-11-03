@@ -5,6 +5,7 @@
 use std::collections::HashMap;
 
 mod op;
+mod directives;
 
 #[derive(Debug)]
 pub struct Line {
@@ -23,6 +24,13 @@ pub struct Interm {
     pub symtab: HashMap<String, u32>,
 }
 
+impl Interm {
+    pub fn reset_counters(&mut self) {
+        self.locctr = 0;
+        self.linectr = 0;
+    }
+}
+
 ///
 /// This function completes the first pass of the algorithm.
 /// General description is available in the PDF.
@@ -34,36 +42,46 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
         let mut tokens: Vec<_> = line.split_whitespace().collect();
 
         interm.linectr += 1;
-        println!("{}: {}", interm.linectr, line);
+        println!("{} ({}): {}", interm.linectr, interm.locctr, line);
 
         // Skip blank lines
         if tokens.len() == 0 {
             continue;
         }
 
-        // Skip commented lines and assembler directives (for now)
+        // Handle comments and assembler directives
         match &tokens[0][..1] {
-            ";" | "." | "#" => continue,
+            ";" | "#" => continue,
+            "." => {
+                match directives::handle(line.to_string(), interm) {
+                    Ok(_) => continue,
+                    Err(e) =>  {
+                        return Err(format!(
+                                "Error parsing assembler directive directive: 
+                                {}\nLine {}:\n\n{}",
+                                e, interm.linectr, line
+                        ));
+                    }
+                }
+            }
             _ => {}
         }
 
-        for token in tokens {
-            if token.ends_with(":") {
-                let symbol = &token[..token.len() - 1];
+        if tokens[0].ends_with(":") {
+            let symbol = &tokens[0][..tokens[0].len() - 1];
 
-                if interm.symtab.contains_key(symbol) {
-                    return Err(format!(
+            if interm.symtab.contains_key(symbol) {
+                return Err(format!(
                         "Error: redefinition of symbol \"{}\"\nLine {}:\n\n{}",
                         symbol, interm.linectr, line
-                    ));
-                } else {
-                    interm.symtab.insert(symbol.to_string(), interm.locctr);
-                }
+                ));
             } else {
-                interm.locctr += op::length(token);
-                break;
+                interm.symtab.insert(symbol.to_string(), interm.locctr);
             }
+        } else {
+            interm.locctr += op::length(tokens[0]);
         }
+
     }
 
     Ok(())
@@ -99,16 +117,4 @@ pub fn second_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
     }
 
     Ok(())
-}
-
-///
-/// Parses one line of the input file.
-/// This function will mutate `interm`
-///
-fn parse_line(line: &String, interm &mut Interm) -> Result<(), String> {
-    let tokens: Vec<_> = line.split_whitespace().collect();
-
-    if tokens.len() == 0 {
-        return Ok(());
-    }
 }
