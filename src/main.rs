@@ -82,4 +82,15 @@ fn main() {
             std::process::exit(1);
         }
     }
+
+    let result = assembler::second_pass(&s, &mut interm);
+
+    match result {
+        Ok(_) => println!("{:?}", interm),
+        Err(e) => {
+            eprintln!("{}\n", e);
+            eprintln!("Build failed. Exiting");
+            std::process::exit(1);
+        }
+    }
 }

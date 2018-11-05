@@ -4,8 +4,8 @@
 //!
 use std::collections::HashMap;
 
-mod op;
 mod directives;
+mod op;
 
 #[derive(Debug)]
 pub struct Line {
@@ -52,18 +52,12 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
         // Handle comments and assembler directives
         match &tokens[0][..1] {
             ";" | "#" => continue,
-            "." => {
-                match directives::handle(line.to_string(), interm) {
-                    Ok(_) => continue,
-                    Err(e) =>  {
-                        return Err(format!(
-                                "Error parsing assembler directive directive: 
-                                {}\nLine {}:\n\n{}",
-                                e, interm.linectr, line
-                        ));
-                    }
+            "." => match directives::handle(line.to_string(), interm) {
+                Ok(_) => continue,
+                Err(e) => {
+                    return Err(e);
                 }
-            }
+            },
             _ => {}
         }
 
@@ -72,8 +66,8 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
 
             if interm.symtab.contains_key(symbol) {
                 return Err(format!(
-                        "Error: redefinition of symbol \"{}\"\nLine {}:\n\n{}",
-                        symbol, interm.linectr, line
+                    "Error: redefinition of symbol \"{}\"\nLine {}:\n\n{}",
+                    symbol, interm.linectr, line
                 ));
             } else {
                 interm.symtab.insert(symbol.to_string(), interm.locctr);
@@ -81,7 +75,6 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
         } else {
             interm.locctr += op::length(tokens[0]);
         }
-
     }
 
     Ok(())
@@ -105,14 +98,14 @@ pub fn second_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
             continue;
         }
 
-        // Skip commented lines and assembler directives (for now)
+        // Skip commented lines and assembler directives
         match &tokens[0][..1] {
             ";" | "." | "#" => continue,
             _ => {}
         }
 
         for token in tokens {
-            println!("parsing");
+            println!("parsing. token: {}", token);
         }
     }
 

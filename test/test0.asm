@@ -1,6 +1,5 @@
 .INCLUDE "./inc/m2560def.inc"
 ; This is a comment
-.org 0x200
 .cseg
 	ldi r16, 0xFF ; This is an inline comment
 	sts DDRL, r16
