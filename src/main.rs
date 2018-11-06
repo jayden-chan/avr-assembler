@@ -5,6 +5,7 @@ use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
+use std::collections::HashMap;
 
 mod assembler;
 mod preproc;
@@ -15,12 +16,19 @@ pub struct Args {
     path: Option<String>,
 }
 
+macro_rules! fail {
+    ($reason:expr) => {
+        eprintln!("{}\n", $reason);
+        eprintln!("Build failed. Exiting");
+        std::process::exit(1);
+    }
+}
+
 fn main() {
     let cmd_args: Vec<String> = env::args().collect();
 
     if cmd_args.len() < 2 {
-        eprintln!("Please specify a file.");
-        std::process::exit(1);
+        fail!("No file specified");
     }
 
     let mut args = Args {
@@ -45,8 +53,7 @@ fn main() {
 
     let mut file = match File::open(&path) {
         Err(why) => {
-            eprintln!("Failed to open file: {}", why.description());
-            std::process::exit(1);
+            fail!(format!("Failed to open file: {}", why.description()));
         }
         Ok(file) => file,
     };
@@ -54,21 +61,26 @@ fn main() {
     let mut s = String::new();
     match file.read_to_string(&mut s) {
         Err(why) => {
-            eprintln!("Failed to open file: {}", why.description());
-            std::process::exit(1);
+            fail!(format!("Failed to open file: {}", why.description()));
         }
         Ok(_) => {}
     }
 
-    let result = preproc::parse(&s);
-    let mut interm: assembler::Interm;
+    let mut interm = assembler::Interm {
+        lines: Vec::new(),
+        optab: Vec::new(),
+        instructions: HashMap::new(),
+        locctr: 0,
+        linectr: 0,
+        symtab: HashMap::new(),
+    };
+
+    let result = preproc::parse(&s, &mut interm);
 
     match result {
-        Ok(i) => interm = i,
+        Ok(_) => {},
         Err(e) => {
-            eprintln!("{}\n", e);
-            eprintln!("Build failed. Exiting");
-            std::process::exit(1);
+            fail!(e);
         }
     }
 
@@ -79,9 +91,7 @@ fn main() {
             println!("{:?}", interm);
         }
         Err(e) => {
-            eprintln!("{}\n", e);
-            eprintln!("Build failed. Exiting");
-            std::process::exit(1);
+            fail!(e);
         }
     }
 
@@ -90,14 +100,11 @@ fn main() {
     println!("---             ---");
 
     let result = assembler::second_pass(&s, &mut interm);
-     
 
     match result {
         Ok(_) => println!("{:?}", interm),
         Err(e) => {
-            eprintln!("{}\n", e);
-            eprintln!("Build failed. Exiting");
-            std::process::exit(1);
+            fail!(e);
         }
     }
 }

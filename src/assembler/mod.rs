@@ -18,6 +18,7 @@ pub struct Line {
 #[derive(Debug)]
 pub struct Interm {
     pub lines: Vec<Line>,
+    pub instructions: HashMap<&'static str, op::Instruction>,
     pub optab: Vec<String>,
     pub locctr: u32,
     pub linectr: u32,
@@ -38,13 +39,14 @@ impl Interm {
 /// Note: This function will mutate the `interm` parameter.
 ///
 pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
+    op::init_op_map(interm);
     interm.reset_counters();
 
     for line in file.lines() {
         let mut tokens: Vec<_> = line.split_whitespace().collect();
 
         interm.linectr += 1;
-        println!("{} ({}): {}", interm.linectr, interm.locctr, line);
+        println!("{:3} ({:4}): {}", interm.linectr, interm.locctr, line);
 
         // Skip blank lines
         if tokens.len() == 0 {
@@ -68,8 +70,8 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
 
             if interm.symtab.contains_key(symbol) {
                 return Err(format!(
-                    "Error: redefinition of symbol \"{}\"\nLine {}:\n\n{}",
-                    symbol, interm.linectr, line
+                        "Error: redefinition of symbol \"{}\"\nLine {}:\n\n{}",
+                        symbol, interm.linectr, line
                 ));
             } else {
                 interm.symtab.insert(symbol.to_string(), interm.locctr);

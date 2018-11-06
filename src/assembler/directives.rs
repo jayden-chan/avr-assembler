@@ -52,7 +52,10 @@ fn num_from_str(string: &str) -> Result<u32, String> {
             }
         }
         "0b" => {
-            Ok(0)
+            match u32::from_str_radix(&string[2..], 2) {
+                Ok(n) => return Ok(n),
+                Err(e) => return Err(e.to_string())
+            }
         }
         _ => {
             match string.parse::<u32>() {
