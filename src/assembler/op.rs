@@ -3,10 +3,13 @@
 //! operation codes
 //!
 
+///
+/// Instruction mnemonics borrowed from `avra`
+///
 #[derive(Debug)]
 pub struct Instruction {
-    code: String,
-    operands: Vec<String>,
+    mnemonic: String,
+    opcode: u32,
 }
 
 ///

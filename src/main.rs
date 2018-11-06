@@ -1,3 +1,5 @@
+extern crate hashbrown;
+
 use std::env;
 use std::error::Error;
 use std::fs::File;
@@ -83,7 +85,12 @@ fn main() {
         }
     }
 
+    println!("---             ---");
+    println!("--- Second pass ---");
+    println!("---             ---");
+
     let result = assembler::second_pass(&s, &mut interm);
+     
 
     match result {
         Ok(_) => println!("{:?}", interm),

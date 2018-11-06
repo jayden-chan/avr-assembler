@@ -4,3 +4,4 @@ version = "0.1.0"
 authors = ["Jayden Chan <jaydencn7@gmail.com>"]
 
 [dependencies]
+hashbrown = "0.1.4"

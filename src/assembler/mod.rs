@@ -38,6 +38,8 @@ impl Interm {
 /// Note: This function will mutate the `interm` parameter.
 ///
 pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
+    interm.reset_counters();
+
     for line in file.lines() {
         let mut tokens: Vec<_> = line.split_whitespace().collect();
 
@@ -87,7 +89,9 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
 /// Note: This function will mutate the `interm` parameter.
 ///
 pub fn second_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
-    for line in file.lines() {
+    interm.reset_counters();
+
+    'outer: for line in file.lines() {
         let mut tokens: Vec<_> = line.split_whitespace().collect();
 
         interm.linectr += 1;
@@ -101,10 +105,14 @@ pub fn second_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
         // Skip commented lines and assembler directives
         match &tokens[0][..1] {
             ";" | "." | "#" => continue,
-            _ => {}
+            _ => {},
         }
 
         for token in tokens {
+            if &token[..1] == ";" {
+                continue 'outer;
+            }
+
             println!("parsing. token: {}", token);
         }
     }
