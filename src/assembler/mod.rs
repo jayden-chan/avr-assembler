@@ -4,15 +4,24 @@
 //!
 use std::collections::HashMap;
 
+macro_rules! error {
+    ($reason:expr, $linenum:expr, $line:expr) => {
+        return Err(format!(
+            "Error: {}\nLine {}:\n\n{}",
+            $reason, $linenum, $line
+        ));
+    };
+}
+
 mod directives;
 mod op;
 
 #[derive(Debug)]
 pub struct Line {
-    pub num: u32,
-    pub addr: u32,
-    pub ins: op::Instruction,
-    pub opcode: i32,
+    num: u32,
+    addr: u32,
+    ins: op::Instruction,
+    opcode: i32,
 }
 
 #[derive(Debug)]
@@ -58,9 +67,7 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
             ";" | "#" => continue,
             "." => match directives::handle(line.to_string(), interm) {
                 Ok(_) => continue,
-                Err(e) => {
-                    return Err(e);
-                }
+                Err(e) => return Err(e),
             },
             _ => {}
         }
@@ -69,10 +76,11 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
             let symbol = &tokens[0][..tokens[0].len() - 1];
 
             if interm.symtab.contains_key(symbol) {
-                return Err(format!(
-                        "Error: redefinition of symbol \"{}\"\nLine {}:\n\n{}",
-                        symbol, interm.linectr, line
-                ));
+                error!(
+                    format!("redefinition of symbol \"{}\"", symbol),
+                    interm.linectr,
+                    line
+                );
             } else {
                 interm.symtab.insert(symbol.to_string(), interm.locctr);
             }
@@ -107,7 +115,7 @@ pub fn second_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
         // Skip commented lines and assembler directives
         match &tokens[0][..1] {
             ";" | "." | "#" => continue,
-            _ => {},
+            _ => {}
         }
 
         for token in tokens {

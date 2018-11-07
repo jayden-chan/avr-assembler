@@ -1,11 +1,11 @@
 extern crate hashbrown;
 
+use std::collections::HashMap;
 use std::env;
 use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
-use std::collections::HashMap;
 
 mod assembler;
 mod preproc;
@@ -21,7 +21,7 @@ macro_rules! fail {
         eprintln!("{}\n", $reason);
         eprintln!("Build failed. Exiting");
         std::process::exit(1);
-    }
+    };
 }
 
 fn main() {
@@ -78,7 +78,7 @@ fn main() {
     let result = preproc::parse(&s, &mut interm);
 
     match result {
-        Ok(_) => {},
+        Ok(_) => {}
         Err(e) => {
             fail!(e);
         }
@@ -102,7 +102,7 @@ fn main() {
     let result = assembler::second_pass(&s, &mut interm);
 
     match result {
-        Ok(_) => println!("{:?}", interm),
+        Ok(_) => println!("{:#?}", interm),
         Err(e) => {
             fail!(e);
         }
