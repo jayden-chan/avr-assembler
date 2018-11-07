@@ -16,6 +16,14 @@ pub struct Instruction {
 }
 
 ///
+/// Represents an assebled instruction
+///
+enum ObjectCode {
+    Short(u16),
+    Long(u32),
+}
+
+///
 /// Length returns the length of the opcode for the
 /// provided instruction code. This function does not
 /// produce any kind of error if an invalid instruction is
@@ -23,9 +31,32 @@ pub struct Instruction {
 ///
 pub fn length(code: &str) -> u32 {
     match code {
-        "CALL" | "JMP" | "LDS" => 32,
+        "call" | "jmp" | "lds" => 32,
         _ => 16,
     }
+}
+
+///
+/// Assembles one instruction and returns the
+/// binary representation
+///
+fn parse(ins: Instruction) -> ObjectCode {
+    match ins.index {
+        index if index < 28 => {
+            println!("suh");
+        }
+
+        index if index < 119 => {
+            println!("suh 2");
+        }
+
+        index => {
+            // check operand 2 here
+            println!("suh 3");
+        }
+    }
+
+    return ObjectCode::Short(0x200);
 }
 
 ///
