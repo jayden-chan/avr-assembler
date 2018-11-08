@@ -6,18 +6,12 @@ use std::collections::HashMap;
 
 use assembler::Interm;
 
-///
-/// Instruction mnemonics borrowed from `avra`
-///
 #[derive(Debug)]
 pub struct Instruction {
     index: u16,
     opcode: u32,
 }
 
-///
-/// Represents an assebled instruction
-///
 enum ObjectCode {
     Short(u16),
     Long(u32),
@@ -157,7 +151,8 @@ fn parse(ins: Instruction) -> ObjectCode {
 
 ///
 /// This function initializes the list of available instructions
-/// since we cannot (yet) have static HashMaps in Rust.
+/// since we cannot (yet) have static HashMaps in Rust. Instruction
+/// list borrowed from `avra`
 ///
 pub fn init_op_map(interm: &mut Interm) {
     interm.instructions = HashMap::new();
