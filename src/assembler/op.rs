@@ -42,18 +42,114 @@ pub fn length(code: &str) -> u32 {
 ///
 fn parse(ins: Instruction) -> ObjectCode {
     match ins.index {
-        index if index < 28 => {
-            println!("suh");
+        0...27 => {
+            println!("<= break");
         }
 
-        index if index < 119 => {
-            println!("suh 2");
+        28 | 29 => {
+            println!("<= elpm");
         }
 
         index => {
-            // check operand 2 here
-            println!("suh 3");
+            // check for operand 1 and 2 here 
+
+            if index >= 69 {
+                println!(">= brbs");
+            }
+
+            match index {
+                0...31 => {
+                    println!("<= bclr");
+                }
+
+                32...46 => {
+                    println!("<= rol");
+                }
+
+                47...66 => {
+                    println!("<= rcall");
+                }
+
+                67 | 68  => {
+                    println!("<= call");
+                }
+
+                69 | 70 => {
+                    println!("<= brbc");
+                }
+
+                71...82 => {
+                    println!("<= mul");
+                }
+
+                83 => {
+                    println!("<= movw");
+                }
+
+                84 => {
+                    println!("<= muls");
+                }
+
+                85...88 => {
+                    println!("<= fmulsu");
+                }
+
+                89 | 90 => {
+                    println!("<= sbiw");
+                }
+
+                91...98 => {
+                    println!("<= cbr");
+                }
+
+                99...102 => {
+                    println!("<= bld");
+                }
+
+                103 => {
+                    println!("in");
+                }
+
+                104 => {
+                    println!("out");
+                }
+
+                105...108 => {
+                    println!("<= cbi");
+                }
+
+                109 => {
+                    println!("lds");
+                }
+
+                110 => {
+                    println!("sts");
+                }
+
+                111 => {
+                    println!("ld");
+                }
+
+                112 => {
+                    println!("st");
+                }
+
+                113 => {
+                    println!("ldd");
+                }
+
+                114 => {
+                    println!("std");
+                }
+
+                i => {
+                    println!("else");
+                }
+
+            }
+            
         }
+
     }
 
     return ObjectCode::Short(0x200);
