@@ -118,13 +118,18 @@ pub fn second_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
             _ => {}
         }
 
-        for token in tokens {
-            if &token[..1] == ";" {
-                continue 'outer;
-            }
-
-            println!("parsing. token: {}", token);
+        match op::get_operands(line.to_string(), interm) {
+            Ok(v) => println!("{:?}", v),
+            Err(e) => println!("{}", e)
         }
+
+        // for token in tokens {
+        //     if &token[..1] == ";" {
+        //         continue 'outer;
+        //     }
+
+        //     println!("parsing. token: {}", token);
+        // }
     }
 
     Ok(())

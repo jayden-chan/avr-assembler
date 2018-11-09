@@ -12,6 +12,7 @@ pub struct Instruction {
     opcode: u32,
 }
 
+#[derive(Debug)]
 enum ObjectCode {
     Short(u16),
     Long(u32),
@@ -31,6 +32,59 @@ pub fn length(code: &str) -> u32 {
 }
 
 ///
+/// Parses one instruction and returns the operands.
+/// This function will translate register symbols as
+/// well as symbols from the SYMTAB. This function assumes
+/// that the input string will be in the format [instruction] [operands]...
+///
+pub fn get_operands(line: String, interm: &Interm) -> Result<Vec<u32>, String> {
+    let tokens: Vec<_> = line.split_whitespace().skip(1).collect();
+    let mut ret = Vec::new();
+
+    for token in tokens {
+        if token.starts_with("r") {
+            let mut s = token.to_string();
+            let mut result;
+
+            match token.ends_with(",") {
+                true => {
+                    s.pop();
+                    result = reg_to_num(s);
+                }
+                false => result = reg_to_num(s)
+            };
+
+            match result {
+                Ok(n) => ret.push(n),
+                Err(e) => error!(e, interm.linectr, line)
+            }
+        }
+    }
+
+    Ok(vec![1, 2])
+}
+
+///
+/// Takes a string in the form r[d][d] and returns the integer
+/// representation
+///
+pub fn reg_to_num(reg: String) -> Result<u32, String> {
+    match reg.parse::<u32>() {
+        Ok(n) => {
+            match n {
+                0...31 => {
+                    return Ok(n);
+                }
+                _ => {
+                    return Err(format!("Register number out of range ({})", n));
+                }
+            }
+        }
+        Err(e) => return Err(format!("Failed to parse register number: {}", e))
+    }
+}
+
+///
 /// Assembles one instruction and returns the
 /// binary representation
 ///
@@ -45,7 +99,7 @@ fn parse(ins: Instruction) -> ObjectCode {
         }
 
         index => {
-            // check for operand 1 and 2 here 
+            // check for operand 1 and 2 here
 
             if index >= 69 {
                 println!(">= brbs");
@@ -141,7 +195,7 @@ fn parse(ins: Instruction) -> ObjectCode {
                 }
 
             }
-            
+
         }
 
     }
