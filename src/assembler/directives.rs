@@ -11,7 +11,7 @@ use util;
 /// the interm accordingly.
 ///
 pub fn handle(line: String, interm: &mut Interm) -> Result<(), String> {
-    let tokens: Vec<_> = line.split_whitespace().collect();
+    let tokens = util::split_string(&line);
 
     if tokens.len() == 0 {
         return Ok(());
@@ -26,7 +26,7 @@ pub fn handle(line: String, interm: &mut Interm) -> Result<(), String> {
                 ));
             }
 
-            match util::num_from_str(tokens[1]) {
+            match util::num_from_str(tokens[1].to_string()) {
                 Ok(n) => interm.locctr = n,
                 Err(e) => {
                     return Err(format!(

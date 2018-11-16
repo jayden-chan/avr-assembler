@@ -4,6 +4,8 @@
 //!
 use std::collections::HashMap;
 
+use util;
+
 macro_rules! error {
     ($reason:expr, $linenum:expr, $line:expr) => {
         return Err(format!(
@@ -52,7 +54,8 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
     interm.reset_counters();
 
     for line in file.lines() {
-        let mut tokens: Vec<_> = line.split_whitespace().collect();
+        let line = line.to_string();
+        let mut tokens = util::split_string(&line);
 
         interm.linectr += 1;
         println!("{:3} ({:4}): {}", interm.linectr, interm.locctr, line);
@@ -102,7 +105,8 @@ pub fn second_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
     interm.reset_counters();
 
     'outer: for line in file.lines() {
-        let mut tokens: Vec<_> = line.split_whitespace().collect();
+        let line = line.to_string();
+        let mut tokens = util::split_string(&line);
 
         interm.linectr += 1;
         println!("{}: {}", interm.linectr, line);
@@ -120,16 +124,11 @@ pub fn second_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
 
         match op::get_operands(line.to_string(), interm) {
             Ok(v) => println!("Operands: {:?}", v),
-            Err(e) => println!("Operands Error: {}", e)
+            Err(e) => {
+                // error!(e, interm.linectr, line);
+                println!("Operands Error: {}", e);
+            }
         }
-
-        // for token in tokens {
-        //     if &token[..1] == ";" {
-        //         continue 'outer;
-        //     }
-
-        //     println!("parsing. token: {}", token);
-        // }
     }
 
     Ok(())

@@ -39,42 +39,39 @@ pub fn length(code: &str) -> u32 {
 /// that the input string will be in the format [instruction] [operands]...
 ///
 pub fn get_operands(line: String, interm: &Interm) -> Result<Vec<u32>, String> {
-    let tokens: Vec<_> = line.split_whitespace().skip(1).collect();
+    let tokens = util::split_string(&line);
     let mut ret = Vec::new();
 
-    for token in tokens {
+    for token in &tokens[1..] {
+        let mut token = token.to_string();
+
+        if token.ends_with(",") {
+            token.pop();
+        }
+
         match token.chars().next().unwrap() {
             'r' => {
-                let mut s = token.to_string();
-                let mut result;
-
-                match token.ends_with(",") {
-                    true => {
-                        s.pop();
-                        result = reg_to_num(s);
-                    }
-                    false => result = reg_to_num(s)
-                };
+                let result = reg_to_num(token);
 
                 match result {
                     Ok(n) => ret.push(n),
-                    Err(e) => error!(e, interm.linectr, line)
+                    Err(e) => return Err(e)
                 }
             }
 
             '0'...'9' => {
                 match util::num_from_str(token) {
                     Ok(n) => ret.push(n),
-                    Err(e) => error!(e, interm.linectr, line)
+                    Err(e) => return Err(e)
                 }
             },
 
             ';' => return Ok(ret),
 
             _ => {
-                match interm.symtab.get(token) {
+                match interm.symtab.get(token.as_str()) {
                     Some(&n) => ret.push(n),
-                    None => error!(format!("Undefined symbol {}", token), interm.linectr, line)
+                    None => return Err(format!("Undefined symbol {}", token))
                 }
             }
         }
@@ -210,7 +207,7 @@ fn parse(ins: Instruction) -> ObjectCode {
                 }
 
                 i => {
-                    println!("else");
+                    println!("else {}", i);
                 }
 
             }

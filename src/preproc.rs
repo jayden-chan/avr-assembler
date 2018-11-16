@@ -3,6 +3,7 @@
 //!
 
 use assembler::Interm;
+use util;
 
 ///
 /// The parse function processes preprocessor macros like #define,
@@ -10,9 +11,10 @@ use assembler::Interm;
 ///
 pub fn parse(file: &String, interm: &mut Interm) -> Result<(), String> {
     for line in file.lines() {
-        interm.linectr += 1;
+        let line = line.to_string();
+        let words = util::split_string(&line);
 
-        let words: Vec<_> = line.split_whitespace().collect();
+        interm.linectr += 1;
 
         if words.len() > 1 && words[0] == "#DEFINE" {
             let symbol = words[1];
