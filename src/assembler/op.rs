@@ -3,8 +3,9 @@
 //! operation codes
 //!
 use std::collections::HashMap;
-
 use assembler::Interm;
+
+use util;
 
 #[derive(Debug)]
 pub struct Instruction {
@@ -42,26 +43,44 @@ pub fn get_operands(line: String, interm: &Interm) -> Result<Vec<u32>, String> {
     let mut ret = Vec::new();
 
     for token in tokens {
-        if token.starts_with("r") {
-            let mut s = token.to_string();
-            let mut result;
+        match token.chars().next().unwrap() {
+            'r' => {
+                let mut s = token.to_string();
+                let mut result;
 
-            match token.ends_with(",") {
-                true => {
-                    s.pop();
-                    result = reg_to_num(s);
+                match token.ends_with(",") {
+                    true => {
+                        s.pop();
+                        result = reg_to_num(s);
+                    }
+                    false => result = reg_to_num(s)
+                };
+
+                match result {
+                    Ok(n) => ret.push(n),
+                    Err(e) => error!(e, interm.linectr, line)
                 }
-                false => result = reg_to_num(s)
-            };
+            }
 
-            match result {
-                Ok(n) => ret.push(n),
-                Err(e) => error!(e, interm.linectr, line)
+            '0'...'9' => {
+                match util::num_from_str(token) {
+                    Ok(n) => ret.push(n),
+                    Err(e) => error!(e, interm.linectr, line)
+                }
+            },
+
+            ';' => return Ok(ret),
+
+            _ => {
+                match interm.symtab.get(token) {
+                    Some(&n) => ret.push(n),
+                    None => error!(format!("Undefined symbol {}", token), interm.linectr, line)
+                }
             }
         }
     }
 
-    Ok(vec![1, 2])
+    Ok(ret)
 }
 
 ///
@@ -69,7 +88,7 @@ pub fn get_operands(line: String, interm: &Interm) -> Result<Vec<u32>, String> {
 /// representation
 ///
 pub fn reg_to_num(reg: String) -> Result<u32, String> {
-    match reg.parse::<u32>() {
+    match reg[1..].parse::<u32>() {
         Ok(n) => {
             match n {
                 0...31 => {

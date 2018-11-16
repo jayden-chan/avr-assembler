@@ -4,8 +4,7 @@
 //!
 
 use assembler::Interm;
-
-use std::u32;
+use util;
 
 ///
 /// Handle parses a line with an assembler directive and modifies
@@ -27,7 +26,7 @@ pub fn handle(line: String, interm: &mut Interm) -> Result<(), String> {
                 ));
             }
 
-            match num_from_str(tokens[1]) {
+            match util::num_from_str(tokens[1]) {
                 Ok(n) => interm.locctr = n,
                 Err(e) => {
                     return Err(format!(
@@ -41,21 +40,4 @@ pub fn handle(line: String, interm: &mut Interm) -> Result<(), String> {
     }
 
     Ok(())
-}
-
-fn num_from_str(string: &str) -> Result<u32, String> {
-    match &string[..2] {
-        "0x" => match u32::from_str_radix(&string[2..], 16) {
-            Ok(n) => return Ok(n),
-            Err(e) => return Err(e.to_string()),
-        },
-        "0b" => match u32::from_str_radix(&string[2..], 2) {
-            Ok(n) => return Ok(n),
-            Err(e) => return Err(e.to_string()),
-        },
-        _ => match string.parse::<u32>() {
-            Ok(n) => return Ok(n),
-            Err(e) => return Err(e.to_string()),
-        },
-    }
 }

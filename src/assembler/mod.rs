@@ -119,8 +119,8 @@ pub fn second_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
         }
 
         match op::get_operands(line.to_string(), interm) {
-            Ok(v) => println!("{:?}", v),
-            Err(e) => println!("{}", e)
+            Ok(v) => println!("Operands: {:?}", v),
+            Err(e) => println!("Operands Error: {}", e)
         }
 
         // for token in tokens {

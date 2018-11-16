@@ -8,6 +8,7 @@ use std::io::prelude::*;
 use std::path::Path;
 
 mod assembler;
+mod util;
 mod preproc;
 
 pub struct Args {
