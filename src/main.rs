@@ -1,5 +1,8 @@
 extern crate hashbrown;
 
+#[macro_use]
+extern crate derivative;
+
 use std::collections::HashMap;
 use std::env;
 use std::error::Error;
@@ -89,7 +92,7 @@ fn main() {
 
     match result {
         Ok(_) => {
-            // println!("{:?}", interm);
+            println!("{:?}", interm);
         }
         Err(e) => {
             fail!(e);
@@ -103,7 +106,7 @@ fn main() {
     let result = assembler::second_pass(&s, &mut interm);
 
     match result {
-        Ok(_) => {}, //println!("{:?}", interm),
+        Ok(_) => println!("{:?}", interm),
         Err(e) => {
             fail!(e);
         }

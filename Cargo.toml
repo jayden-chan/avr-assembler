@@ -5,3 +5,4 @@ authors = ["Jayden Chan <jaydencn7@gmail.com>"]
 
 [dependencies]
 hashbrown = "0.1.4"
+derivative = "1.0.2"

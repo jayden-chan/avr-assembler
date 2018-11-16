@@ -18,7 +18,8 @@ macro_rules! error {
 mod directives;
 mod op;
 
-#[derive(Debug)]
+#[derive(Derivative)]
+#[derivative(Debug)]
 pub struct Line {
     num: u32,
     addr: u32,
@@ -26,9 +27,11 @@ pub struct Line {
     opcode: i32,
 }
 
-#[derive(Debug)]
+#[derive(Derivative)]
+#[derivative(Debug)]
 pub struct Interm {
     pub lines: Vec<Line>,
+    #[derivative(Debug="ignore")]
     pub instructions: HashMap<&'static str, op::Instruction>,
     pub optab: Vec<String>,
     pub locctr: u32,
