@@ -401,7 +401,7 @@ mod test {
     #[test]
     fn test_reg_to_num() {
         assert_eq!(reg_to_num("r32".to_string()), Err("Register number out of range (32)".to_string()));
-        assert_eq!(reg_to_num("daowuno".to_string()), 
+        assert_eq!(reg_to_num("daowuno".to_string()),
                    Err("Failed to parse register number: invalid digit found in string".to_string()));
 
         for i in 0..32 {
@@ -427,5 +427,17 @@ mod test {
         assert_eq!(get_operands(String::from("jmp undefined"), &interm), Err(String::from("Undefined symbol undefined")));
         assert_eq!(get_operands(String::from("label: lds r16, PORTB"), &interm), Ok(vec![16, 0xBEEF]));
         assert_eq!(get_operands(String::from("label: out PORTL, r16"), &interm), Ok(vec![0xDEAD, 16]));
+    }
+
+    #[test]
+    fn test_length() {
+        assert_eq!(length("ldi"), 16);
+        assert_eq!(length("out"), 16);
+        assert_eq!(length("tst"), 16);
+        assert_eq!(length("in"), 16);
+        assert_eq!(length("breq"), 16);
+        assert_eq!(length("call"), 32);
+        assert_eq!(length("jmp"), 32);
+        assert_eq!(length("lds"), 32);
     }
 }

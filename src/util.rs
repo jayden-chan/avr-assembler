@@ -29,3 +29,37 @@ pub fn num_from_str(string: String) -> Result<u32, String> {
 pub fn split_string<'a>(line: &'a String) -> Vec<&'a str> {
     line.split(|c: char| c == ',' || c.is_whitespace()).filter(|i| i != &"").collect()
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_num_from_str() {
+        assert_eq!(num_from_str(String::from("10")), Ok(10));
+        assert_eq!(num_from_str(String::from("0xFF")), Ok(0xFF));
+        assert_eq!(num_from_str(String::from("0b1000")), Ok(0b1000));
+        assert_eq!(num_from_str(String::from("wuadbu")), Err(String::from("invalid digit found in string")));
+        assert_eq!(num_from_str(String::from("0xTT")), Err(String::from("invalid digit found in string")));
+        assert_eq!(num_from_str(String::from("0bJJJ")), Err(String::from("invalid digit found in string")));
+    }
+
+    #[test]
+    fn test_split_string() {
+        assert_eq!(split_string(
+                &String::from("test: ldi r16, 9 ;this is a comment")),
+                vec!["test:", "ldi", "r16", "9", ";this", "is", "a", "comment"]);
+
+        assert_eq!(split_string(
+                &String::from("this is a nother, r, test ; testing here")),
+                vec!["this", "is", "a", "nother", "r", "test", ";", "testing", "here"]);
+
+        assert_eq!(split_string(
+                &String::from("testing,just,commas,here")),
+                vec!["testing", "just", "commas", "here"]);
+
+        assert_eq!(split_string(
+                &String::from("testing just spaces here")),
+                vec!["testing", "just", "spaces", "here"]);
+    }
+}
