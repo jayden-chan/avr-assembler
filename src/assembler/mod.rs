@@ -90,6 +90,10 @@ pub fn first_pass(file: &String, interm: &mut Interm) -> Result<(), String> {
             } else {
                 interm.symtab.insert(symbol.to_string(), interm.locctr);
             }
+
+            if tokens.len() > 1 {
+                interm.locctr += op::length(&tokens[1].to_lowercase());
+            }
         } else {
             interm.locctr += op::length(&tokens[0].to_lowercase());
         }

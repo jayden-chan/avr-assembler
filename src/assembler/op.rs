@@ -43,11 +43,16 @@ pub fn get_operands(line: String, interm: &Interm) -> Result<Vec<u32>, String> {
     let mut ret = Vec::new();
 
     for token in &tokens[1..] {
+        if interm.instructions.contains_key(token) {
+            continue;
+        }
+
         let mut token = token.to_string();
 
         if token.ends_with(",") {
             token.pop();
         }
+
 
         match token.chars().next().unwrap() {
             'r' => {
@@ -370,4 +375,57 @@ pub fn init_op_map(interm: &mut Interm) {
     interm.instructions.insert("std",   Instruction{opcode: 0x8208, index: 140});
     interm.instructions.insert("std",   Instruction{opcode: 0x8200, index: 141});
     interm.instructions.insert("end",   Instruction{opcode: 0,      index: 142});
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    fn init_fake_interm() -> Interm {
+        let mut interm = Interm {
+            lines: Vec::new(),
+            optab: Vec::new(),
+            instructions: HashMap::new(),
+            locctr: 0,
+            linectr: 0,
+            symtab: HashMap::new(),
+        };
+
+        init_op_map(&mut interm);
+        interm.symtab.insert(String::from("defined_label"), 200);
+        interm.symtab.insert(String::from("PORTL"), 0xDEAD);
+        interm.symtab.insert(String::from("PORTB"), 0xBEEF);
+        interm
+    }
+
+    #[test]
+    fn test_reg_to_num() {
+        assert_eq!(reg_to_num("r32".to_string()), Err("Register number out of range (32)".to_string()));
+        assert_eq!(reg_to_num("daowuno".to_string()), 
+                   Err("Failed to parse register number: invalid digit found in string".to_string()));
+
+        for i in 0..32 {
+            let mut reg = String::from("r");
+            reg.push_str(i.to_string().as_str());
+            assert_eq!(reg_to_num(reg), Ok(i));
+        }
+    }
+
+    #[test]
+    fn test_get_operands() {
+        let mut interm = init_fake_interm();
+
+        assert_eq!(get_operands(String::from("ldi r16, 0xff"), &interm), Ok(vec![16, 0xff]));
+        assert_eq!(get_operands(String::from("test:       jmp 0x23"), &interm), Ok(vec![0x23]));
+        assert_eq!(get_operands(String::from("loop: nop"), &interm), Ok(vec![]));
+        assert_eq!(get_operands(String::from("brne done"), &interm), Err(String::from("Undefined symbol done")));
+        assert_eq!(get_operands(String::from("nop"), &interm), Ok(vec![]));
+        assert_eq!(get_operands(String::from("label:"), &interm), Ok(vec![]));
+        assert_eq!(get_operands(String::from("label: ldi r16, 0x22"), &interm), Ok(vec![16, 0x22]));
+        assert_eq!(get_operands(String::from("label: ldi r29, 0b10001010"), &interm), Ok(vec![29, 0b10001010]));
+        assert_eq!(get_operands(String::from("jmp defined_label"), &interm), Ok(vec![200]));
+        assert_eq!(get_operands(String::from("jmp undefined"), &interm), Err(String::from("Undefined symbol undefined")));
+        assert_eq!(get_operands(String::from("label: lds r16, PORTB"), &interm), Ok(vec![16, 0xBEEF]));
+        assert_eq!(get_operands(String::from("label: out PORTL, r16"), &interm), Ok(vec![0xDEAD, 16]));
+    }
 }
